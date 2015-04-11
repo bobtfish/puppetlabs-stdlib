@@ -15,22 +15,14 @@ module Puppet::Parser::Functions
         # Equivalent to $bar = $site::data::bar
     ENDHEREDOC
 
-    if args.length > 2 or args.length < 1
+    if !args.length.between?(1, 2)
       raise Puppet::ParseError, ("getvar(): wrong number of arguments (#{args.length}; must be 1)")
     end
 
-    begin
-      getvar = self.lookupvar("#{args[0]}")
-      if getvar ; then
-        getvar
-      elsif args[1]
-        args[1]
-      end
-    rescue Puppet::ParseError # Eat the exception if strict_variables = true is set
-      # Return the requested default if provided
-      if args[1]; then
-        return args[1]
-      end
+    if self.include? args[0]
+      self.lookupvar args[0]
+    else
+      args[1]
     end
 
   end
